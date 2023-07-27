@@ -1,0 +1,93 @@
+﻿using BepInEx;
+using UnityEngine;
+using MonoMod.RuntimeDetour;
+using UnityEngine.Rendering;
+using System.Reflection;
+using System;
+using UnityEngine.UI;
+
+namespace kf3tweaks
+{
+    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInProcess("けもフレ３.exe")]
+    public class Plugin : BaseUnityPlugin
+    {
+        public static int RENDER_TEXTURE_RESOLUTION_MULT = 2; // Multiplier for texture sizes used with camera render-to-texture. The game usually uses 1024x for these
+
+        private void Awake()
+        {
+            // Plugin startup logic
+            Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+
+            On.CanvasManager.Initialize += CanvasManager_Initialize;
+            On.RenderTextureChara.SetupRenderTexture += RenderTextureChara_SetupRenderTexture;
+            On.UserOptionData.SetDisplayQuality += UserOptionData_SetDisplayQuality;
+            On.SceneManager.InitializeOption += SceneManager_InitializeOption;
+        }
+
+        private void SceneManager_InitializeOption(On.SceneManager.orig_InitializeOption orig)
+        {
+            orig();
+            SceneManager.screenSize = new Resolution() { width = 1600, height = 900 };
+            Logger.LogInfo("Patched screensize");
+        }
+
+        // Increase AA quality and enable aniso filtering
+        // Large increase in graphics fidelity
+        private void UserOptionData_SetDisplayQuality(On.UserOptionData.orig_SetDisplayQuality orig, UserOptionData self)
+        {
+            orig(self); // Not really necessary, on PC this method does nothing else
+
+            QualitySettings.antiAliasing = 8; // Default is 1 in low-quality mode, 2 in high-quality
+            QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
+        }
+
+        // Increase resolution of textures used with camera render-to-texture
+        // Affects friend growth screen (super blurry normally!), newcomer gacha screen, daily login assistant, friend details, possibly more
+        private void RenderTextureChara_SetupRenderTexture(On.RenderTextureChara.orig_SetupRenderTexture orig, RenderTextureChara self, int w, int h)
+        {
+            // Call orig with increased texture size
+            orig(self, w * RENDER_TEXTURE_RESOLUTION_MULT, h * RENDER_TEXTURE_RESOLUTION_MULT);
+
+            // Set size of the UI element back to the intended one - necessary as the end of SetupRenderTexture() calls SetNativeSize()
+            FieldInfo field = typeof(RenderTextureChara).GetField("m_dispTexture", BindingFlags.NonPublic | BindingFlags.Instance);
+            RawImage dispTexture = field.GetValue(self) as RawImage;
+            RectTransform rect = dispTexture.transform as RectTransform;
+            rect.sizeDelta = new Vector2(w, h); 
+        }
+
+        private void Update()
+        {
+            // Poll keybinds
+            if (Input.GetKeyDown(KeyCode.LeftAlt)) // Toggle FPS cap
+            {
+                bool isUncapped = QualitySettings.vSyncCount != 0;
+                QualitySettings.vSyncCount = isUncapped ? 0 : 1;
+            }
+            if (Input.GetKey(KeyCode.RightAlt) && Input.GetKeyDown(KeyCode.Return)) // Toggle borderless windowed
+            {
+                Resolution bestRes = Screen.resolutions[Screen.resolutions.Length - 1];
+                Screen.SetResolution(bestRes.width, bestRes.height, Screen.fullScreenMode == FullScreenMode.FullScreenWindow ? FullScreenMode.Windowed : FullScreenMode.FullScreenWindow);
+            }
+        }
+
+        void OnApplicationQuit()
+        {
+            // Necessary to prevent strange letterboxing from taking place if you previously closed the game with an unusual aspect ratio
+            // Ideally that letterboxing would be disabled, but I'm not sure where exactly it happens - most likely in CanvasManager
+            Screen.SetResolution(1600, 900, false);
+        }
+
+        // Disable resolution lock
+        private void CanvasManager_Initialize(On.CanvasManager.orig_Initialize orig)
+        {
+            Type type = typeof(CanvasManager);
+            FieldInfo info = type.GetField("oldWndProc", BindingFlags.NonPublic | BindingFlags.Static);
+
+            // Prevents SetWindowProc from running, since the check in Update() is != zero. This field is not used for anything else, so it needn't be any valid pointer.
+            info.SetValue(null, IntPtr.Zero + 1);
+
+            orig();
+        }
+    }
+}
