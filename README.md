@@ -22,12 +22,12 @@ Extract contents into the BepInEx folder, such that the contents of `plugins` go
 - Press `Left Alt` to toggle VSync, which will also set the FPS cap of the game to your monitor's
 
 ![Comparison of friend details between unmodded 1600x900 and 1080p with the plugin.](images/friend_details_comparison.png)
-<center><i>Comparison of friend details between unmodded 1600x900 and 1080p with the plugin.<i></center>
+<i>Comparison of friend details between unmodded 1600x900 and 1080p with the plugin.</i>
 
-<br>
+---
 
 ![Dialogue at 1080p with 8x MSAA.](images/dialogue.png)
-<center><i>Dialogue at 1080p with 8x MSAA.<i></center>
+<i>Dialogue at 1080p with 8x MSAA.</i>
 
 ## Keyboard controls
 Some keyboard controls were added to combat:
@@ -40,6 +40,15 @@ Some keyboard controls were added to combat:
 
 These hotkeys should function the same way as touching the correspoding UI elements.
 
+## Other stuff
+
+- Camera rotation when petting friends is no longer restricted
+    - Due to how the camera movement works, in some places it might clip out of bounds. Zooming in/out will not help as it only affects FoV.
+    - You cannot do 360 rotations around a friend; once you reach the maximum +/-180 degrees on either axis, you'll have to rotate in the opposite direction to get to the other side
+
+![Ostrich-san waiting for her back massage.](images/home_friend.png)
+<i>Ostrich-san waiting for her back massage.</i>
+
 ## Known Issues
 - Friends will appear oversized in the gacha newcomer scene
 - `Left Alt` key to toggle VSync appears to not work in some places; use it in the home or combat scenes if you run into this issue (and it will persist)
@@ -47,7 +56,7 @@ These hotkeys should function the same way as touching the correspoding UI eleme
 
 ## Planned features
 - Issuing miracle orders with shift+number key
-- Unrestricting camera movement in the home
 - Rebinding hotkeys
 - BepInEx config file support
 - Option to use 4x MSAA instead (though I assure you your GPU is not the bottleneck in this game)
+- Fixing text overflow in dialogue when using the translation mod

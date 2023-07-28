@@ -36,6 +36,8 @@ namespace kf3tweaks
             On.UserOptionData.SetDisplayQuality += UserOptionData_SetDisplayQuality;
             On.SceneManager.InitializeOption += SceneManager_InitializeOption;
             On.SceneBattle.Update += SceneBattle_Update;
+            On.SceneHome.OnEnableScene += SceneHome_OnEnableScene;
+            On.SceneHome.Update += SceneHome_Update;
         }
 
         private void SceneManager_InitializeOption(On.SceneManager.orig_InitializeOption orig)
@@ -150,7 +152,31 @@ namespace kf3tweaks
             orig(self);
         }
 
-        private T GetField<C, T>(C instance, string fieldName, BindingFlags flags)
+        private void SceneHome_OnEnableScene(On.SceneHome.orig_OnEnableScene orig, SceneHome self, object args)
+        {
+            orig(self, args);
+            UnrestrictHomeCamera(self);
+        }
+
+        private void SceneHome_Update(On.SceneHome.orig_Update orig, SceneHome self)
+        {
+            bool viewPositionChanged = GetField<SceneHome, bool>(self, "viewChg");
+
+            orig(self); // Polls viewChg, set from change position button click
+
+            if (viewPositionChanged)
+            {
+                UnrestrictHomeCamera(self);
+            }
+        }
+
+        private void UnrestrictHomeCamera(SceneHome scene)
+        {
+            SetField<SceneHome>(scene, "viewMin", BindingFlags.NonPublic | BindingFlags.Instance, new Vector3(-180, -180, -180));
+            SetField<SceneHome>(scene, "viewMax", BindingFlags.NonPublic | BindingFlags.Instance, new Vector3(180, 180, 180));
+        }
+
+        private T GetField<C, T>(C instance, string fieldName, BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance)
         {
             return (T)(typeof(C).GetField(fieldName, flags).GetValue(instance));
         }
