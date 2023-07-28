@@ -5,6 +5,7 @@ using UnityEngine.Rendering;
 using System.Reflection;
 using System;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace kf3tweaks
 {
@@ -13,6 +14,17 @@ namespace kf3tweaks
     public class Plugin : BaseUnityPlugin
     {
         public static int RENDER_TEXTURE_RESOLUTION_MULT = 2; // Multiplier for texture sizes used with camera render-to-texture. The game usually uses 1024x for these
+
+        // Keys for issuing commands to friends in combat
+        // index 0 = friend 1 (from left to right)
+        public static KeyCode[] FRIEND_ACT_KEYCODES = new KeyCode[]
+        {
+            KeyCode.Alpha1,
+            KeyCode.Alpha2,
+            KeyCode.Alpha3,
+            KeyCode.Alpha4,
+            KeyCode.Alpha5,
+        };
 
         private void Awake()
         {
@@ -23,6 +35,7 @@ namespace kf3tweaks
             On.RenderTextureChara.SetupRenderTexture += RenderTextureChara_SetupRenderTexture;
             On.UserOptionData.SetDisplayQuality += UserOptionData_SetDisplayQuality;
             On.SceneManager.InitializeOption += SceneManager_InitializeOption;
+            On.SceneBattle.Update += SceneBattle_Update;
         }
 
         private void SceneManager_InitializeOption(On.SceneManager.orig_InitializeOption orig)
@@ -88,6 +101,63 @@ namespace kf3tweaks
             info.SetValue(null, IntPtr.Zero + 1);
 
             orig();
+        }
+
+        private void SceneBattle_Update(On.SceneBattle.orig_Update orig, SceneBattle self)
+        {
+            // Check keybinds
+            try
+            {
+                for (int i = 0; i < FRIEND_ACT_KEYCODES.Length; ++i)
+                {
+                    KeyCode keyCode = FRIEND_ACT_KEYCODES[i];
+                    if (Input.GetKeyDown(keyCode))
+                    {
+                        SceneBattle.GUI gui = GetField<SceneBattle, SceneBattle.GUI>(self, "guiData", BindingFlags.NonPublic | BindingFlags.Instance);
+                        List<Transform> characterClickboxes = gui.TouchChara;
+
+                        if (i < characterClickboxes.Count)
+                        {
+                            SetField<SceneBattle>(self, "currentTouch", BindingFlags.NonPublic | BindingFlags.Instance, characterClickboxes[i]);
+                        }
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.Escape)) // Cancel flag order
+                {
+                    SetField<SceneBattle>(self, "cancelCardBtn", BindingFlags.NonPublic | BindingFlags.Instance, true);
+                }
+                if (Input.GetKeyDown(KeyCode.Space)) // Use refill
+                {
+                    SceneBattle.GUI gui = GetField<SceneBattle, SceneBattle.GUI>(self, "guiData", BindingFlags.NonPublic | BindingFlags.Instance);
+                    SetField<SceneBattle>(self, "currentTouch", BindingFlags.NonPublic | BindingFlags.Instance, gui.TouchActGage);
+                }
+                if (Input.GetKeyDown(KeyCode.F)) // Toggle fast mode
+                {
+                    SceneBattle.GUI gui = GetField<SceneBattle, SceneBattle.GUI>(self, "guiData", BindingFlags.NonPublic | BindingFlags.Instance);
+                    gui.BtnFast.m_Button.onClick?.Invoke();
+                }
+                if (Input.GetKeyDown(KeyCode.A)) // Toggle autoplay
+                {
+                    SceneBattle.GUI gui = GetField<SceneBattle, SceneBattle.GUI>(self, "guiData", BindingFlags.NonPublic | BindingFlags.Instance);
+                    gui.BtnAuto.m_Button.onClick?.Invoke();
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e);
+            }
+
+            orig(self);
+        }
+
+        private T GetField<C, T>(C instance, string fieldName, BindingFlags flags)
+        {
+            return (T)(typeof(C).GetField(fieldName, flags).GetValue(instance));
+        }
+
+        private void SetField<C>(C instance, string fieldName, BindingFlags flags, object value)
+        {
+            typeof(C).GetField(fieldName, flags).SetValue(instance, value);
         }
     }
 }
