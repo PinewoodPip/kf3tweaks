@@ -74,7 +74,7 @@ namespace kf3tweaks
         private void Update()
         {
             // Poll keybinds
-            if (Input.GetKeyDown(KeyCode.LeftAlt)) // Toggle FPS cap
+            if (Input.GetKeyDown(KeyCode.RightControl)) // Toggle FPS cap
             {
                 bool isUncapped = QualitySettings.vSyncCount != 0;
                 QualitySettings.vSyncCount = isUncapped ? 0 : 1;
