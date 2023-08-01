@@ -29,18 +29,19 @@ Extract contents into the BepInEx folder, such that the contents of `plugins` go
 ![Dialogue at 1080p with 8x MSAA.](images/dialogue.png)
 <i>Dialogue at 1080p with 8x MSAA.</i>
 
-## Keyboard controls
+### Keyboard controls
 Some keyboard controls were added to combat:
 
 - Number keys 1-5 will issue orders; these correspond to friends from left to right
+    - If `Left Shift` is also held, miracles will be issued instead
 - `Escape` will cancel an order
 - `Spacebar` uses a refill
 - `F` toggles fast mode
 - `A` toggles autoplay
 
-These hotkeys should function the same way as touching the correspoding UI elements.
+These hotkeys should function the same way as touching the corresponding UI elements.
 
-## Other stuff
+### Other stuff
 
 - Camera rotation when petting friends is no longer restricted
     - Due to how the camera movement works, in some places it might clip out of bounds. Zooming in/out will not help as it only affects FoV.
@@ -53,9 +54,9 @@ These hotkeys should function the same way as touching the correspoding UI eleme
 - Friends will appear oversized in the gacha newcomer scene
 - `Left Alt` key to toggle VSync appears to not work in some places; use it in the home or combat scenes if you run into this issue (and it will persist)
 - Clothing might shake a bit in the picnic scene above 30FPS; this is probably too much of a hassle to fix
+- There is no longer a prompt before closing the game, as it is tightly coupled to the resolution lock. Personally I prefer it that way, but if there is demand, I could add it back.
 
 ## Planned features
-- Issuing miracle orders with shift+number key
 - Rebinding hotkeys
 - BepInEx config file support
 - Option to use 4x MSAA instead (though I assure you your GPU is not the bottleneck in this game)
