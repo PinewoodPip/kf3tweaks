@@ -86,13 +86,6 @@ namespace kf3tweaks
             }
         }
 
-        void OnApplicationQuit()
-        {
-            // Necessary to prevent strange letterboxing from taking place if you previously closed the game with an unusual aspect ratio
-            // Ideally that letterboxing would be disabled, but I'm not sure where exactly it happens - most likely in CanvasManager
-            Screen.SetResolution(1600, 900, false);
-        }
-
         // Disable resolution lock
         private void CanvasManager_Initialize(On.CanvasManager.orig_Initialize orig)
         {
