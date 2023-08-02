@@ -64,11 +64,15 @@ namespace kf3tweaks
             // Call orig with increased texture size
             orig(self, w * RENDER_TEXTURE_RESOLUTION_MULT, h * RENDER_TEXTURE_RESOLUTION_MULT);
 
+            // SetupRenderTexture() is in some places called twice - once explicitly, another time from Start() - we need to not apply the size multiplier twice
+            SetField<RenderTextureChara>(self, "width", BindingFlags.NonPublic | BindingFlags.Instance, w);
+            SetField<RenderTextureChara>(self, "height", BindingFlags.NonPublic | BindingFlags.Instance, h);
+
             // Set size of the UI element back to the intended one - necessary as the end of SetupRenderTexture() calls SetNativeSize()
             FieldInfo field = typeof(RenderTextureChara).GetField("m_dispTexture", BindingFlags.NonPublic | BindingFlags.Instance);
             RawImage dispTexture = field.GetValue(self) as RawImage;
             RectTransform rect = dispTexture.transform as RectTransform;
-            rect.sizeDelta = new Vector2(w, h); 
+            rect.sizeDelta = new Vector2(w, h);
         }
 
         private void Update()
