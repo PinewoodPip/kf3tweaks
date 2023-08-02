@@ -6,6 +6,7 @@ using System.Reflection;
 using System;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using static team.pinewood.utilities.Reflection;
 
 namespace kf3tweaks
 {
@@ -65,8 +66,8 @@ namespace kf3tweaks
             orig(self, w * RENDER_TEXTURE_RESOLUTION_MULT, h * RENDER_TEXTURE_RESOLUTION_MULT);
 
             // SetupRenderTexture() is in some places called twice - once explicitly, another time from Start() - we need to not apply the size multiplier twice
-            SetField<RenderTextureChara>(self, "width", BindingFlags.NonPublic | BindingFlags.Instance, w);
-            SetField<RenderTextureChara>(self, "height", BindingFlags.NonPublic | BindingFlags.Instance, h);
+            SetField<RenderTextureChara>(self, "width", w);
+            SetField<RenderTextureChara>(self, "height", h);
 
             // Set size of the UI element back to the intended one - necessary as the end of SetupRenderTexture() calls SetNativeSize()
             FieldInfo field = typeof(RenderTextureChara).GetField("m_dispTexture", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -118,18 +119,18 @@ namespace kf3tweaks
 
                         if (i < characterClickboxes.Count)
                         {
-                            SetField<SceneBattle>(self, "currentTouch", BindingFlags.NonPublic | BindingFlags.Instance, characterClickboxes[i]);
+                            SetField<SceneBattle>(self, "currentTouch", characterClickboxes[i]);
                         }
                     }
                 }
                 if (Input.GetKeyDown(KeyCode.Escape)) // Cancel flag order
                 {
-                    SetField<SceneBattle>(self, "cancelCardBtn", BindingFlags.NonPublic | BindingFlags.Instance, true);
+                    SetField<SceneBattle>(self, "cancelCardBtn", true);
                 }
                 if (Input.GetKeyDown(KeyCode.Space)) // Use refill
                 {
                     SceneBattle.GUI gui = GetField<SceneBattle, SceneBattle.GUI>(self, "guiData", BindingFlags.NonPublic | BindingFlags.Instance);
-                    SetField<SceneBattle>(self, "currentTouch", BindingFlags.NonPublic | BindingFlags.Instance, gui.TouchActGage);
+                    SetField<SceneBattle>(self, "currentTouch", gui.TouchActGage);
                 }
                 if (Input.GetKeyDown(KeyCode.F)) // Toggle fast mode
                 {
@@ -170,18 +171,8 @@ namespace kf3tweaks
 
         private void UnrestrictHomeCamera(SceneHome scene)
         {
-            SetField<SceneHome>(scene, "viewMin", BindingFlags.NonPublic | BindingFlags.Instance, new Vector3(-180, -180, -180));
-            SetField<SceneHome>(scene, "viewMax", BindingFlags.NonPublic | BindingFlags.Instance, new Vector3(180, 180, 180));
-        }
-
-        private T GetField<C, T>(C instance, string fieldName, BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance)
-        {
-            return (T)(typeof(C).GetField(fieldName, flags).GetValue(instance));
-        }
-
-        private void SetField<C>(C instance, string fieldName, BindingFlags flags, object value)
-        {
-            typeof(C).GetField(fieldName, flags).SetValue(instance, value);
+            SetField<SceneHome>(scene, "viewMin", new Vector3(-180, -180, -180));
+            SetField<SceneHome>(scene, "viewMax", new Vector3(180, 180, 180));
         }
     }
 }
