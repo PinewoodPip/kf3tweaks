@@ -39,6 +39,36 @@ namespace kf3tweaks
             On.SceneBattle.Update += SceneBattle_Update;
             On.SceneHome.OnEnableScene += SceneHome_OnEnableScene;
             On.SceneHome.Update += SceneHome_Update;
+            On.TypewriterEffect.SetCurrentText += TypewriterEffect_SetCurrentText;
+            On.SceneQuest.GUI.ChapterSelect.InactiveParts += ChapterSelect_InactiveParts;
+        }
+
+        private void ChapterSelect_InactiveParts(On.SceneQuest.GUI.ChapterSelect.orig_InactiveParts orig, SceneQuest.GUI.ChapterSelect self)
+        {
+            orig(self);
+            foreach (SceneQuest.GUI.ChapterSelect.Parts part in self.parts)
+            {
+                FitText(part.Txt_Serif.m_Text);
+                //FitText(part.Txt_CharaName.m_Text); // Possibly unnecessary / ugly
+            }
+            Logger.LogInfo("Fitted text for ChapterSelect parts");
+        }
+
+        private void TypewriterEffect_SetCurrentText(On.TypewriterEffect.orig_SetCurrentText orig, TypewriterEffect self, string text, int size, int spd)
+        {
+            orig(self, text, size, spd);
+            Text textField = GetField<TypewriterEffect, Text>(self, "mTestText");
+            textField.rectTransform.sizeDelta = new Vector2(675, textField.rectTransform.sizeDelta.y); // Expand the dialogue box a bit, since it is surprisingly short horizontally. Default width is 567. It could also be moved to the left a bit to make more space and keep the margin on the sides equal - TODO
+            FitText(textField);
+            Logger.LogInfo("Fitting text");
+        }
+
+        private void FitText(Text text)
+        {
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = 14;
+            text.resizeTextMaxSize = text.fontSize;
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
         }
 
         private void SceneManager_InitializeOption(On.SceneManager.orig_InitializeOption orig)
