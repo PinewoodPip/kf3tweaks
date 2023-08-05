@@ -19,7 +19,7 @@ Extract contents into the BepInEx folder, such that the contents of `plugins` go
 - Makes the game use up to 8x MSAA instead of 2x/1x, which greatly increases the quality of the anti-aliasing and makes far-away friends look a lot less jagged
 - Doubled the size of textures used with camera render-to-texture, which makes friends look a lot less blurry in UIs where they are superposed over a background (ex. friend growth, friend details, Meerkat/Dhole/Peach Panther/Mirai in the UIs)
 - Press `Right Alt + Enter` to toggle borderless windowed mode
-- Press `Left Alt` to toggle VSync, which will also set the FPS cap of the game to your monitor's
+- Press `Right Ctrl` to toggle VSync, which will also set the FPS cap of the game to your monitor's
 
 ![Comparison of friend details between unmodded 1600x900 and 1080p with the plugin.](images/friend_details_comparison.png)
 <i>Comparison of friend details between unmodded 1600x900 and 1080p with the plugin.</i>
@@ -28,6 +28,12 @@ Extract contents into the BepInEx folder, such that the contents of `plugins` go
 
 ![Dialogue at 1080p with 8x MSAA.](images/dialogue.png)
 <i>Dialogue at 1080p with 8x MSAA.</i>
+
+### Text-fitting
+Some text fields have been modified to try to prevent text overflow when using the translation mod. This currently affects dialogue within quests as well as the friend text in the quest selection UI.
+
+![Dialogue text fitting.](images/dialogue_text_fit.png)
+![Quest flair text fitting.](images/chapterselect_text_fit.png)
 
 ### Keyboard controls
 Some keyboard controls were added to combat:
@@ -51,8 +57,7 @@ These hotkeys should function the same way as touching the corresponding UI elem
 <i>Ostrich-san waiting for her back massage.</i>
 
 ## Known Issues
-- Friends will appear oversized in the gacha newcomer scene
-- `Left Alt` key to toggle VSync appears to not work in some places; use it in the home or combat scenes if you run into this issue (and it will persist)
+- `Right Ctrl` key to toggle VSync appears to not work in some places; use it in the home or combat scenes if you run into this issue (and it will persist)
 - Clothing might shake a bit in the picnic scene above 30FPS; this is probably too much of a hassle to fix
 - There is no longer a prompt before closing the game, as it is tightly coupled to the resolution lock. Personally I prefer it that way, but if there is demand, I could add it back.
 
@@ -60,4 +65,3 @@ These hotkeys should function the same way as touching the corresponding UI elem
 - Rebinding hotkeys
 - BepInEx config file support
 - Option to use 4x MSAA instead (though I assure you your GPU is not the bottleneck in this game)
-- Fixing text overflow in dialogue when using the translation mod
