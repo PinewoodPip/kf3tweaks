@@ -41,6 +41,7 @@ namespace kf3tweaks
             On.SceneHome.Update += SceneHome_Update;
             On.TypewriterEffect.SetCurrentText += TypewriterEffect_SetCurrentText;
             On.SceneQuest.GUI.ChapterSelect.InactiveParts += ChapterSelect_InactiveParts;
+            On.CommunicationCtrl.CharaViewGuiData.ctor += OnFriendMemoryCreated;
         }
 
         private void ChapterSelect_InactiveParts(On.SceneQuest.GUI.ChapterSelect.orig_InactiveParts orig, SceneQuest.GUI.ChapterSelect self)
@@ -63,11 +64,11 @@ namespace kf3tweaks
             Logger.LogInfo("Fitting text");
         }
 
-        private void FitText(Text text)
+        private void FitText(Text text, int maxSize=-1)
         {
             text.resizeTextForBestFit = true;
             text.resizeTextMinSize = 14;
-            text.resizeTextMaxSize = text.fontSize;
+            text.resizeTextMaxSize = maxSize == -1 ? text.fontSize : maxSize;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
         }
 
@@ -196,6 +197,28 @@ namespace kf3tweaks
             if (viewPositionChanged)
             {
                 UnrestrictHomeCamera(self);
+            }
+        }
+
+        private void OnFriendMemoryCreated(On.CommunicationCtrl.CharaViewGuiData.orig_ctor orig, CommunicationCtrl.CharaViewGuiData self, GameObject go)
+        {
+            orig(self, go);
+
+            PguiTextCtrl[] childTexts = go.GetComponentsInChildren<PguiTextCtrl>(true);
+            try
+            {
+                foreach (PguiTextCtrl childText in childTexts)
+                {
+                    Logger.LogInfo(childText);
+                    FitText(childText.m_Text, 35);
+                    childText.m_Text.alignment = TextAnchor.UpperCenter;
+                }
+                Logger.LogInfo("Fitting growth level up text fields");
+
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e);
             }
         }
 
