@@ -42,6 +42,7 @@ namespace kf3tweaks
             On.TypewriterEffect.SetCurrentText += TypewriterEffect_SetCurrentText;
             On.SceneQuest.GUI.ChapterSelect.InactiveParts += ChapterSelect_InactiveParts;
             On.CommunicationCtrl.CharaViewGuiData.ctor += OnFriendMemoryCreated;
+            On.GachaAuthCtrl.GachaAeGreeting.ctor += OnGachaGreetingCreated;
         }
 
         private void ChapterSelect_InactiveParts(On.SceneQuest.GUI.ChapterSelect.orig_InactiveParts orig, SceneQuest.GUI.ChapterSelect self)
@@ -220,6 +221,12 @@ namespace kf3tweaks
             {
                 Logger.LogError(e);
             }
+        }
+
+        private void OnGachaGreetingCreated(On.GachaAuthCtrl.GachaAeGreeting.orig_ctor orig, GachaAuthCtrl.GachaAeGreeting self, Transform baseTr)
+        {
+            orig(self, baseTr);
+            FitText(self.Txt_Serif.m_Text);
         }
 
         private void UnrestrictHomeCamera(SceneHome scene)
