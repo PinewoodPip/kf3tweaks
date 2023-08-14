@@ -10,6 +10,8 @@ namespace TextFitting
     [BepInProcess("けもフレ３.exe")]
     public class Plugin : BaseUnityPlugin
     {
+        public static int MINIMUM_FONT_SIZE = 10;
+
         private void Awake()
         {
             // Plugin startup logic
@@ -20,12 +22,13 @@ namespace TextFitting
             On.CommunicationCtrl.CharaViewGuiData.ctor += OnFriendMemoryCreated;
             On.GachaAuthCtrl.GachaAeGreeting.ctor += OnGachaGreetingCreated;
             On.SelLoginBonus.GUI.ctor += OnLoginBonusUICreated;
+            On.CharaUtil.GUISkillInfo.Setup += OnSkillInfoCreated;
         }
 
         public static void FitText(Text text, int maxSize = -1)
         {
             text.resizeTextForBestFit = true;
-            text.resizeTextMinSize = 14;
+            text.resizeTextMinSize = MINIMUM_FONT_SIZE;
             text.resizeTextMaxSize = maxSize == -1 ? text.fontSize : maxSize;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Truncate;
@@ -84,6 +87,18 @@ namespace TextFitting
             orig(self, baseTr);
             Text text = self.Txt_Serif.m_Text;
             FitText(text);
+        }
+
+        private void OnSkillInfoCreated(On.CharaUtil.GUISkillInfo.orig_Setup orig, CharaUtil.GUISkillInfo self, CharaUtil.GUISkillInfo.SetupParam setupParam)
+        {
+            orig(self, setupParam);
+            Text skillDescriptionText = self.Txt_Info.m_Text;
+            RectTransform descriptionParent = skillDescriptionText.rectTransform.parent as RectTransform;
+
+            skillDescriptionText.rectTransform.sizeDelta = new Vector2(skillDescriptionText.rectTransform.sizeDelta.x, descriptionParent.rect.height - 48); // Normally these text fields are very tall; we set them to roughly the visual size of the box to make downsizing text work
+
+            FitText(self.Txt_Info.m_Text);
+            FitText(self.Txt_Name.m_Text);
         }
 
         public static T GetField<C, T>(C instance, string fieldName, BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance)
