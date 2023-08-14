@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>kf3tweaks</AssemblyName>
-    <Description>Tweaks for Kemono Friends 3.</Description>
-    <Version>0.9.1</Version>
+    <AssemblyName>TextFitting</AssemblyName>
+    <Description>Fixes Kemono Friends 3 text field sizes and wrapping.</Description>
+    <Version>0.9</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Company>Team Pinewood</Company>
@@ -15,7 +15,7 @@
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.*" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
-    <PackageReference Include="UnityEngine.Modules" Version="2020.3.40.18644" IncludeAssets="compile" />
+    <PackageReference Include="UnityEngine.Modules" Version="2020.3.40.12208340" IncludeAssets="compile" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
@@ -41,6 +41,6 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y &quot;$(TargetDir)kf3tweaks.dll&quot; &quot;C:\Users\Usuario\KFP2G\BepInEx\plugins\kf3tweaks\kf3tweaks.dll&quot;" />
+    <Exec Command="copy /Y &quot;$(TargetDir)TextFitting.dll&quot; &quot;C:\Users\Usuario\KFP2G\BepInEx\plugins\TextFitting.dll&quot;" />
   </Target>
 </Project>

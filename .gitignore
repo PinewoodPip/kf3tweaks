@@ -2,4 +2,8 @@ kf3tweaks/bin/*
 kf3tweaks/lib/*
 kf3tweaks/.vs/*
 kf3tweaks/obj/*
+TextFitting/bin/*
+TextFitting/lib/*
+TextFitting/.vs/*
+TextFitting/obj/*
 *.dll
