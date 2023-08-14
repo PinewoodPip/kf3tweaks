@@ -206,17 +206,17 @@ namespace kf3tweaks
         {
             orig(self, go);
 
-            PguiTextCtrl[] childTexts = go.GetComponentsInChildren<PguiTextCtrl>(true);
             try
             {
-                foreach (PguiTextCtrl childText in childTexts)
-                {
-                    Logger.LogInfo(childText);
-                    FitText(childText.m_Text, 35);
-                    childText.m_Text.alignment = TextAnchor.UpperCenter;
-                }
+                GameObject textObject = go.transform.Find("Auth_HeartLvUp/AEImage_Info/Serif_Info03/Txt").gameObject;
+                Text text = textObject.GetComponent<PguiTextCtrl>().m_Text;
+                ContentSizeFitter contentFitter = textObject.GetComponent<ContentSizeFitter>();
+                contentFitter.enabled = false;
+                text.rectTransform.sizeDelta = new Vector2(1500, 100);
+                Logger.LogInfo(text);
+                FitText(text, 35);
+                text.alignment = TextAnchor.UpperCenter;
                 Logger.LogInfo("Fitting growth level up text fields");
-
             }
             catch (Exception e)
             {
