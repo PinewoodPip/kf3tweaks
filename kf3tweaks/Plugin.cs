@@ -43,6 +43,7 @@ namespace kf3tweaks
             On.SceneQuest.GUI.ChapterSelect.InactiveParts += ChapterSelect_InactiveParts;
             On.CommunicationCtrl.CharaViewGuiData.ctor += OnFriendMemoryCreated;
             On.GachaAuthCtrl.GachaAeGreeting.ctor += OnGachaGreetingCreated;
+            On.SelLoginBonus.GUI.ctor += OnLoginBonusUICreated;
         }
 
         private void ChapterSelect_InactiveParts(On.SceneQuest.GUI.ChapterSelect.orig_InactiveParts orig, SceneQuest.GUI.ChapterSelect self)
@@ -227,6 +228,13 @@ namespace kf3tweaks
         {
             orig(self, baseTr);
             FitText(self.Txt_Serif.m_Text);
+        }
+
+        private void OnLoginBonusUICreated(On.SelLoginBonus.GUI.orig_ctor orig, SelLoginBonus.GUI self, Transform baseTr)
+        {
+            orig(self, baseTr);
+            Text text = self.Txt_Serif.m_Text;
+            FitText(text);
         }
 
         private void UnrestrictHomeCamera(SceneHome scene)
