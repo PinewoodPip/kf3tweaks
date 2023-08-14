@@ -72,6 +72,7 @@ namespace kf3tweaks
             text.resizeTextMinSize = 14;
             text.resizeTextMaxSize = maxSize == -1 ? text.fontSize : maxSize;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
         }
 
         private void SceneManager_InitializeOption(On.SceneManager.orig_InitializeOption orig)
