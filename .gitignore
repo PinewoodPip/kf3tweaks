@@ -8,3 +8,4 @@ TextFitting/.vs/*
 TextFitting/obj/*
 *.dll
 *.sqlite
+.vs/VSWorkspaceState.json

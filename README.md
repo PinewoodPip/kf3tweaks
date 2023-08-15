@@ -1,14 +1,15 @@
 
-This is a mod for Kemono Friends 3 (DMM version) that improves the graphics quality and adds some keyboard controls.
+This is a mod for Kemono Friends 3 (DMM version) that improves the graphics quality, adds some keyboard controls, and alters some text fields to display better when using the translation mod.
 
 It functions similarly to the translation mod, in the sense that no game files are modified. As such, it should be as safe/unsafe to use as the translation mod itself, and is compatible with it.
 
 ## Installation
 Requires BepInEx, which you'll already have if you're using the translation patch.
 
-Extract contents into the BepInEx folder, such that the contents of `plugins` goes into your `plugins` directory and likewise for the `patchers` folder.
+Extract contents into the BepInEx folder, such that the contents of `plugins` goes into your `plugins` directory and likewise for the `patchers` and `core` folder.
 
-- `kf3tweaks.dll` is the plugin
+- `kf3tweaks.dll` is the main plugin, with the main features described below
+- `TextFitting.dll` is the plugin that edits text fields
 - The MonoMod files and `BepInEx.MonoMod.HookGenPatcher.dll` are required to generate hooks for the game's methods; `LighterPatcher.dll` strips the auto-generated MMHOOK dll to reduce bloat
     - This should allow the mod to keep working after game updates, so long as the patched methods are not significantly altered
 
@@ -30,7 +31,18 @@ Extract contents into the BepInEx folder, such that the contents of `plugins` go
 <i>Dialogue at 1080p with 8x MSAA.</i>
 
 ### Text-fitting
-Some text fields have been modified to try to prevent text overflow when using the translation mod. This currently affects dialogue within quests as well as the friend text in the quest selection UI.
+Some text fields have been modified to try to prevent text overflow when using the translation mod. This is done by the `TextFitting.dll` plugin.
+
+The following text fields are affected:
+
+- Quest dialogue
+- Friend text in quest selection
+- Friendship level up messages
+- Daily login bonus friend text
+- Gacha newcomer greeting
+- Skill descriptions (in the friend details UI)
+
+Text in these fields will wrap, and font size will be reduced if the text were to overflow.
 
 ![Dialogue text fitting.](images/dialogue_text_fit.png)
 ![Quest flair text fitting.](images/chapterselect_text_fit.png)
