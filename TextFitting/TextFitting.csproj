@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>TextFitting</AssemblyName>
     <Description>Fixes Kemono Friends 3 text field sizes and wrapping.</Description>
-    <Version>0.9</Version>
+    <Version>0.10</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Company>Team Pinewood</Company>

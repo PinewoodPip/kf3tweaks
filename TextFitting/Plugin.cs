@@ -17,6 +17,7 @@ namespace TextFitting
 
         private Hook pvpNameHook;
         private Hook helperNameHook;
+        private Hook scenarioLogHook;
 
         private void Awake()
         {
@@ -31,9 +32,11 @@ namespace TextFitting
             On.SelLoginBonus.GUI.ctor += OnLoginBonusUICreated;
             On.CharaUtil.GUISkillInfo.Setup += OnSkillInfoCreated;
             On.SelShopCtrl.ShopBtn.ctor += OnShopButtonCreated;
+            On.ScenarioGUISelect.SetSelectLabel += OnQuestChoiceButtonsSet;
 
             pvpNameHook = new Hook(typeof(SelPvpCtrl).GetMethod("UpdateGUIEnemy", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Plugin).GetMethod("OnPVPEnemyUpdated", BindingFlags.NonPublic | BindingFlags.Static));
             pvpNameHook = new Hook(typeof(SelBattleHelperCtrl).GetMethod("OnUpdateItemFriend", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Plugin).GetMethod("OnHelperEntryUIUpdated", BindingFlags.NonPublic | BindingFlags.Static));
+            scenarioLogHook = new Hook(typeof(ScenarioScene).GetMethod("SetupLog", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Plugin).GetMethod("OnQuestLogUpdated", BindingFlags.NonPublic | BindingFlags.Static));
 
             Logger.LogInfo("Hooks created");
         }
@@ -50,6 +53,7 @@ namespace TextFitting
 
             pvpNameHook.Dispose();
             helperNameHook.Dispose();
+            scenarioLogHook.Dispose();
         }
 
         public static void FitText(Text text, int maxSize = -1)
@@ -170,6 +174,40 @@ namespace TextFitting
             {
                 instance.Logger.LogError(e);
             }
+        }
+
+        private static void OnQuestLogUpdated(Action<ScenarioScene, int, GameObject> orig, ScenarioScene self, int index, GameObject gameObject)
+        {
+            orig(self, index, gameObject);
+            Transform transform = gameObject.transform.Find("Normal");
+            Text characterName = transform.Find("Txt_CharaName").GetComponent<Text>();
+            Text characterDialogue = transform.Find("Txt_Serif").GetComponent<Text>();
+            Text narration = gameObject.transform.Find("Narration").Find("Txt_Serif").GetComponent<Text>();
+
+            characterName.rectTransform.sizeDelta = new Vector2(500, characterName.rectTransform.sizeDelta.y); // Make name text field wider; original is something like 200
+            characterDialogue.rectTransform.sizeDelta = new Vector2(500, 65); // TODO change alignment on this so positioning is more intuitive? It's currently middle-left
+            characterDialogue.rectTransform.anchoredPosition = new Vector2(21, -60);
+            narration.rectTransform.sizeDelta = new Vector2(500, 65); // Also uses middle-left align(?)
+            narration.rectTransform.anchoredPosition = new Vector2(21, 10);
+
+            FitText(characterName);
+            FitText(characterDialogue);
+            FitText(narration);
+
+            instance.Logger.LogInfo("Fitted quest log text");
+        }
+
+        private void OnQuestChoiceButtonsSet(On.ScenarioGUISelect.orig_SetSelectLabel orig, ScenarioGUISelect self, string label1, string label2, bool isSingle)
+        {
+            orig(self, label1, label2, isSingle);
+            Text text1 = self.mSelectLabel01;
+            Text text2 = self.mSelectLabel02; // Yes they only have 2 buttons here at most
+
+            text1.rectTransform.sizeDelta = new Vector2(460, 50);
+            text2.rectTransform.sizeDelta = new Vector2(460, 50);
+
+            FitText(self.mSelectLabel01, 30);
+            FitText(self.mSelectLabel02, 30);
         }
 
         private static void ToggleTranslator(bool enabled)
