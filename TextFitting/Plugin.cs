@@ -23,6 +23,18 @@ namespace TextFitting
             On.GachaAuthCtrl.GachaAeGreeting.ctor += OnGachaGreetingCreated;
             On.SelLoginBonus.GUI.ctor += OnLoginBonusUICreated;
             On.CharaUtil.GUISkillInfo.Setup += OnSkillInfoCreated;
+            On.SelShopCtrl.ShopBtn.ctor += OnShopButtonCreated;
+
+        private void OnDestroy()
+        {
+            On.TypewriterEffect.SetCurrentText -= TypewriterEffect_SetCurrentText;
+            On.SceneQuest.GUI.ChapterSelect.InactiveParts -= ChapterSelect_InactiveParts;
+            On.CommunicationCtrl.CharaViewGuiData.ctor -= OnFriendMemoryCreated;
+            On.GachaAuthCtrl.GachaAeGreeting.ctor -= OnGachaGreetingCreated;
+            On.SelLoginBonus.GUI.ctor -= OnLoginBonusUICreated;
+            On.CharaUtil.GUISkillInfo.Setup -= OnSkillInfoCreated;
+            On.SelShopCtrl.ShopBtn.ctor -= OnShopButtonCreated;
+
         }
 
         public static void FitText(Text text, int maxSize = -1)
@@ -99,6 +111,16 @@ namespace TextFitting
 
             FitText(self.Txt_Info.m_Text);
             FitText(self.Txt_Name.m_Text);
+        }
+
+        private void OnShopButtonCreated(On.SelShopCtrl.ShopBtn.orig_ctor orig, SelShopCtrl.ShopBtn self, Transform baseTr)
+        {
+            orig(self, baseTr);
+            Text text = self.Txt.m_Text;
+            RectTransform rect = text.rectTransform;
+
+            rect.sizeDelta = new Vector2(rect.sizeDelta.x, 50); // Default is 30; not enough for wrapping
+            FitText(text);
         }
 
         public static T GetField<C, T>(C instance, string fieldName, BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance)
