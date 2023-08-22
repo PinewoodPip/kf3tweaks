@@ -8,8 +8,8 @@ Requires BepInEx, which you'll already have if you're using the translation patc
 
 Extract contents into the BepInEx folder, such that the contents of `plugins` goes into your `plugins` directory and likewise for the `patchers` and `core` folder.
 
-- `kf3tweaks.dll` is the main plugin, with the main features described below
-- `TextFitting.dll` is the plugin that edits text fields
+- `kf3tweaks.dll` is the main plugin, with the features described below that aren't related to text
+- `TextFitting.dll` is the plugin that edits text fields; this is also distributed separately with Vorked's translation pack
 - The MonoMod files and `BepInEx.MonoMod.HookGenPatcher.dll` are required to generate hooks for the game's methods; `LighterPatcher.dll` strips the auto-generated MMHOOK dll to reduce bloat
     - This should allow the mod to keep working after game updates, so long as the patched methods are not significantly altered
 
@@ -35,17 +35,20 @@ Some text fields have been modified to try to prevent text overflow when using t
 
 The following text fields are affected:
 
-- Quest dialogue
+- Quest dialogue, as well as the log and text within choice buttons
 - Friend text in quest selection
 - Friendship level up messages
 - Daily login bonus friend text
 - Gacha newcomer greeting
 - Skill descriptions (in the friend details UI)
+- Buttons in the shop
 
 Text in these fields will wrap, and font size will be reduced if the text were to overflow.
 
 ![Dialogue text fitting.](images/dialogue_text_fit.png)
 ![Quest flair text fitting.](images/chapterselect_text_fit.png)
+
+Additionally, usernames within the PVP enemy selection or the helper selection UIs will (try to) no longer be translated. Unfortunately due to quirks with the translator plug-in, they might still get translated if you back out of a menu (ex. select a helper and go back) or toggle the translation off & on.
 
 ### Keyboard controls
 Some keyboard controls were added to combat:
