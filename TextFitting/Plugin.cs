@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using System;
 using MonoMod.RuntimeDetour;
+using System.Collections.Generic;
 
 namespace TextFitting
 {
@@ -15,6 +16,7 @@ namespace TextFitting
         public static Plugin instance = null;
 
         private Hook pvpNameHook;
+        private Hook helperNameHook;
 
         private void Awake()
         {
@@ -31,6 +33,7 @@ namespace TextFitting
             On.SelShopCtrl.ShopBtn.ctor += OnShopButtonCreated;
 
             pvpNameHook = new Hook(typeof(SelPvpCtrl).GetMethod("UpdateGUIEnemy", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Plugin).GetMethod("OnPVPEnemyUpdated", BindingFlags.NonPublic | BindingFlags.Static));
+            pvpNameHook = new Hook(typeof(SelBattleHelperCtrl).GetMethod("OnUpdateItemFriend", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Plugin).GetMethod("OnHelperEntryUIUpdated", BindingFlags.NonPublic | BindingFlags.Static));
 
             Logger.LogInfo("Hooks created");
         }
@@ -46,6 +49,7 @@ namespace TextFitting
             On.SelShopCtrl.ShopBtn.ctor -= OnShopButtonCreated;
 
             pvpNameHook.Dispose();
+            helperNameHook.Dispose();
         }
 
         public static void FitText(Text text, int maxSize = -1)
@@ -142,6 +146,30 @@ namespace TextFitting
 
             rect.sizeDelta = new Vector2(rect.sizeDelta.x, 50); // Default is 30; not enough for wrapping
             FitText(text);
+        }
+
+        private static void OnHelperEntryUIUpdated(Action<SelBattleHelperCtrl, int, GameObject> orig, SelBattleHelperCtrl self, int index, GameObject gameObject)
+        {
+            orig(self, index, gameObject);
+            try
+            {
+                SelBattleHelperCtrl.GUI gui = GetField<SelBattleHelperCtrl, SelBattleHelperCtrl.GUI>(self, "guiData");
+                SelBattleHelperCtrl.GUI.FriendChip entry = gui.friendChipList.Find((SelBattleHelperCtrl.GUI.FriendChip item) => item.baseObj == gameObject);
+                List<List<HelperPackData>> helperList = GetField<SelBattleHelperCtrl, List<List<HelperPackData>>>(self, "helperList");
+                int currentAttrIndex = GetField<SelBattleHelperCtrl, int>(self, "currentAttrIndex");
+                HelperPackData helperPack = helperList[currentAttrIndex][index];
+
+                ToggleTranslator(false);
+                entry.Txt_FriendName.text = helperPack.userName;
+                entry.Num_Rank.text = "Exp. Lv " + helperPack.level.ToString();
+                ToggleTranslator(true);
+
+                instance.Logger.LogInfo("Patched helper username");
+            }
+            catch (Exception e)
+            {
+                instance.Logger.LogError(e);
+            }
         }
 
         private static void ToggleTranslator(bool enabled)
