@@ -3,6 +3,7 @@ using System.Reflection;
 using UnityEngine.UI;
 using UnityEngine;
 using System;
+using MonoMod.RuntimeDetour;
 
 namespace TextFitting
 {
@@ -11,11 +12,15 @@ namespace TextFitting
     public class Plugin : BaseUnityPlugin
     {
         public static int MINIMUM_FONT_SIZE = 10;
+        public static Plugin instance = null;
+
+        private Hook pvpNameHook;
 
         private void Awake()
         {
             // Plugin startup logic
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+            instance = this;
 
             On.TypewriterEffect.SetCurrentText += TypewriterEffect_SetCurrentText;
             On.SceneQuest.GUI.ChapterSelect.InactiveParts += ChapterSelect_InactiveParts;
@@ -24,6 +29,11 @@ namespace TextFitting
             On.SelLoginBonus.GUI.ctor += OnLoginBonusUICreated;
             On.CharaUtil.GUISkillInfo.Setup += OnSkillInfoCreated;
             On.SelShopCtrl.ShopBtn.ctor += OnShopButtonCreated;
+
+            pvpNameHook = new Hook(typeof(SelPvpCtrl).GetMethod("UpdateGUIEnemy", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Plugin).GetMethod("OnPVPEnemyUpdated", BindingFlags.NonPublic | BindingFlags.Static));
+
+            Logger.LogInfo("Hooks created");
+        }
 
         private void OnDestroy()
         {
@@ -35,6 +45,7 @@ namespace TextFitting
             On.CharaUtil.GUISkillInfo.Setup -= OnSkillInfoCreated;
             On.SelShopCtrl.ShopBtn.ctor -= OnShopButtonCreated;
 
+            pvpNameHook.Dispose();
         }
 
         public static void FitText(Text text, int maxSize = -1)
@@ -113,6 +124,16 @@ namespace TextFitting
             FitText(self.Txt_Name.m_Text);
         }
 
+        private static void OnPVPEnemyUpdated(Action<SelPvpCtrl, SelPvpCtrl.GUIEnemy, PvpDynamicData.EnemyInfo> orig, SelPvpCtrl self, SelPvpCtrl.GUIEnemy gui, PvpDynamicData.EnemyInfo enemy)
+        {
+            orig(self, gui, enemy);
+            ToggleTranslator(false);
+            gui.Txt_FriendName.m_Text.text = enemy.userName;
+            gui.Num_Rank.text = "Exp. Lv " + enemy.userLevel.ToString();
+            ToggleTranslator(true);
+            instance.Logger.LogInfo("Patched PVP username");
+        }
+
         private void OnShopButtonCreated(On.SelShopCtrl.ShopBtn.orig_ctor orig, SelShopCtrl.ShopBtn self, Transform baseTr)
         {
             orig(self, baseTr);
@@ -121,6 +142,11 @@ namespace TextFitting
 
             rect.sizeDelta = new Vector2(rect.sizeDelta.x, 50); // Default is 30; not enough for wrapping
             FitText(text);
+        }
+
+        private static void ToggleTranslator(bool enabled)
+        {
+            GameObject.Find("___XUnityAutoTranslator")?.SendMessage(enabled ? "EnableAutoTranslator" : "DisableAutoTranslator");
         }
 
         public static T GetField<C, T>(C instance, string fieldName, BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance)
