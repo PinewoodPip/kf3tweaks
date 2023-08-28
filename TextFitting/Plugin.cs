@@ -33,6 +33,7 @@ namespace TextFitting
             On.CharaUtil.GUISkillInfo.Setup += OnSkillInfoCreated;
             On.SelShopCtrl.ShopBtn.ctor += OnShopButtonCreated;
             On.ScenarioGUISelect.SetSelectLabel += OnQuestChoiceButtonsSet;
+            On.PguiCmnMenuCtrl.GUI.ctor += OnExpeditionStatusUICreated;
 
             pvpNameHook = new Hook(typeof(SelPvpCtrl).GetMethod("UpdateGUIEnemy", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Plugin).GetMethod("OnPVPEnemyUpdated", BindingFlags.NonPublic | BindingFlags.Static));
             pvpNameHook = new Hook(typeof(SelBattleHelperCtrl).GetMethod("OnUpdateItemFriend", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Plugin).GetMethod("OnHelperEntryUIUpdated", BindingFlags.NonPublic | BindingFlags.Static));
@@ -50,6 +51,8 @@ namespace TextFitting
             On.SelLoginBonus.GUI.ctor -= OnLoginBonusUICreated;
             On.CharaUtil.GUISkillInfo.Setup -= OnSkillInfoCreated;
             On.SelShopCtrl.ShopBtn.ctor -= OnShopButtonCreated;
+            On.ScenarioGUISelect.SetSelectLabel -= OnQuestChoiceButtonsSet;
+            On.PguiCmnMenuCtrl.GUI.ctor -= OnExpeditionStatusUICreated;
 
             pvpNameHook.Dispose();
             helperNameHook.Dispose();
@@ -208,6 +211,14 @@ namespace TextFitting
 
             FitText(self.mSelectLabel01, 30);
             FitText(self.mSelectLabel02, 30);
+        }
+
+        private void OnExpeditionStatusUICreated(On.PguiCmnMenuCtrl.GUI.orig_ctor orig, PguiCmnMenuCtrl.GUI self, Transform baseTr)
+        {
+            orig(self, baseTr);
+            ToggleTranslator(false);
+            self.Txt_Rank.text = "Exp. Lv";
+            ToggleTranslator(true);
         }
 
         private static void ToggleTranslator(bool enabled)
