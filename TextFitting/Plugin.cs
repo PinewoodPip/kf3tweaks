@@ -27,6 +27,7 @@ namespace TextFitting
 
             On.TypewriterEffect.SetCurrentText += TypewriterEffect_SetCurrentText;
             On.SceneQuest.GUI.ChapterSelect.InactiveParts += ChapterSelect_InactiveParts;
+            On.SceneQuest.GUI.LocationEvent.ctor += OnLocationEventCreated;
             On.CommunicationCtrl.CharaViewGuiData.ctor += OnFriendMemoryCreated;
             On.GachaAuthCtrl.GachaAeGreeting.ctor += OnGachaGreetingCreated;
             On.SelLoginBonus.GUI.ctor += OnLoginBonusUICreated;
@@ -46,6 +47,7 @@ namespace TextFitting
         {
             On.TypewriterEffect.SetCurrentText -= TypewriterEffect_SetCurrentText;
             On.SceneQuest.GUI.ChapterSelect.InactiveParts -= ChapterSelect_InactiveParts;
+            On.SceneQuest.GUI.LocationEvent.ctor -= OnLocationEventCreated;
             On.CommunicationCtrl.CharaViewGuiData.ctor -= OnFriendMemoryCreated;
             On.GachaAuthCtrl.GachaAeGreeting.ctor -= OnGachaGreetingCreated;
             On.SelLoginBonus.GUI.ctor -= OnLoginBonusUICreated;
@@ -219,6 +221,12 @@ namespace TextFitting
             ToggleTranslator(false);
             self.Txt_Rank.text = "Exp. Lv";
             ToggleTranslator(true);
+        }
+
+        private void OnLocationEventCreated(On.SceneQuest.GUI.LocationEvent.orig_ctor orig, SceneQuest.GUI.LocationEvent self, Transform baseTr)
+        {
+            orig(self, baseTr);
+            FitText(self.Txt_Serif.m_Text);
         }
 
         private static void ToggleTranslator(bool enabled)
