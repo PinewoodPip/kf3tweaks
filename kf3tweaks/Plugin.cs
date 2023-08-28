@@ -127,9 +127,20 @@ namespace kf3tweaks
                     KeyCode keyCode = FRIEND_ACT_KEYCODES[i];
                     if (Input.GetKeyDown(keyCode))
                     {
-                        bool useMiracle = Input.GetKey(KeyCode.LeftShift);
                         SceneBattle.GUI gui = GetField<SceneBattle, SceneBattle.GUI>(self, "guiData", BindingFlags.NonPublic | BindingFlags.Instance);
-                        List<Transform> characterClickboxes = useMiracle ?  gui.TouchArts : gui.TouchChara; // Touch miracles instead if shift is held
+                        List<Transform> characterClickboxes; 
+                        if (Input.GetKey(KeyCode.LeftShift)) // Touch miracles if lshift is held
+                        {
+                            characterClickboxes = gui.TouchArts;
+                        }
+                        else if (Input.GetKey(KeyCode.LeftControl)) // Touch standby skill if lctrl is held
+                        {
+                            characterClickboxes = gui.TouchWait;
+                        }
+                        else // Otherwise touch character
+                        {
+                            characterClickboxes = gui.TouchChara;
+                        }
 
                         if (i < characterClickboxes.Count)
                         {
