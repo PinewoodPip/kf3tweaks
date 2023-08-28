@@ -36,7 +36,7 @@ namespace TextFitting
             On.PguiCmnMenuCtrl.GUI.ctor += OnExpeditionStatusUICreated;
 
             pvpNameHook = new Hook(typeof(SelPvpCtrl).GetMethod("UpdateGUIEnemy", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Plugin).GetMethod("OnPVPEnemyUpdated", BindingFlags.NonPublic | BindingFlags.Static));
-            pvpNameHook = new Hook(typeof(SelBattleHelperCtrl).GetMethod("OnUpdateItemFriend", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Plugin).GetMethod("OnHelperEntryUIUpdated", BindingFlags.NonPublic | BindingFlags.Static));
+            helperNameHook = new Hook(typeof(SelBattleHelperCtrl).GetMethod("OnUpdateItemFriend", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Plugin).GetMethod("OnHelperEntryUIUpdated", BindingFlags.NonPublic | BindingFlags.Static));
             scenarioLogHook = new Hook(typeof(ScenarioScene).GetMethod("SetupLog", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Plugin).GetMethod("OnQuestLogUpdated", BindingFlags.NonPublic | BindingFlags.Static));
 
             Logger.LogInfo("Hooks created");
