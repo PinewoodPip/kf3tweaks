@@ -27,6 +27,8 @@ namespace kf3tweaks
             KeyCode.Alpha5,
         };
 
+        private bool showOverlay = false;
+
         private void Awake()
         {
             // Plugin startup logic
@@ -88,6 +90,18 @@ namespace kf3tweaks
             {
                 Resolution bestRes = Screen.resolutions[Screen.resolutions.Length - 1];
                 Screen.SetResolution(bestRes.width, bestRes.height, Screen.fullScreenMode == FullScreenMode.FullScreenWindow ? FullScreenMode.Windowed : FullScreenMode.FullScreenWindow);
+            }
+
+            showOverlay = Input.GetKey(KeyCode.F1);
+        }
+
+        private void OnGUI()
+        {
+            if (showOverlay)
+            {
+                // Display JST time
+                DateTime jst = DateTime.UtcNow.AddHours(9);
+                GUI.Box(new Rect(0, 0, 100, 25), new GUIContent(jst.ToString("HH:mm") + " JST"));
             }
         }
 
